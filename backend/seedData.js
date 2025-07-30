@@ -26,7 +26,7 @@ const seedData = async () => {
     // Create sample users if they don't exist
     let admin = await User.findOne({ username: 'admin' });
     if (!admin) {
-      admin = new User({ username: 'admin', email: 'admin@example.com', password: 'admin123', isAdmin: true });
+      admin = new User({ username: 'admin', email: 'cto@villamart.in', password: 'admin123', isAdmin: true });
       await admin.save();
       console.log('Admin user created: admin@example.com / admin123');
     }
