@@ -26,7 +26,7 @@ return (
     <div className="w-full max-w-xs p-8 bg-white rounded-2xl shadow-2xl border-t-4 border-green-400">
       <div className="flex justify-center mb-6">
         <img
-          src="/images/villamart" // <-- Replace with your actual logo path
+          src="/images/villamart-logo.png" // <-- Replace with your actual logo path
           alt="Villamart Logo"
           className="h-16 w-16 object-contain rounded-full border-2 border-green-400 shadow"
         />
