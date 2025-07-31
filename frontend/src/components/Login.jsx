@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import API from "../api";
 import { useNavigate } from "react-router-dom";
 
@@ -15,9 +17,11 @@ export default function Login({ setUser }) {
       localStorage.setItem("token", res.data.token);
       setUser(res.data.user);
       localStorage.setItem("user", JSON.stringify(res.data.user));
+      toast.success("Login successful!");
       navigate("/tasks");
     } catch (err) {
-      setError(err.response?.data?.msg || "Error");
+      const errorMessage = err.response?.data?.msg || "Login failed";
+      toast.error(errorMessage);
     }
   };
 
@@ -59,7 +63,20 @@ return (
         <p className="text-sm text-gray-600">Contact your administrator for account access</p>
       </div>
     </div>
+    
+    {/* Toast Container */}
+    <ToastContainer
+      position="top-right"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="light"
+    />
   </div>
 );
-// ...existing code...
 }

@@ -158,6 +158,15 @@ export default function Tasks({ user, setUser }) {
                 </button>
               )}
               
+              {/* Profile Icon */}
+              <button
+                onClick={() => navigate("/profile")}
+                className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full flex items-center justify-center text-white font-bold text-lg hover:from-emerald-500 hover:to-green-600 transition-all duration-200 shadow-sm"
+                title="Profile Settings"
+              >
+                {user?.username?.charAt(0).toUpperCase()}
+              </button>
+              
               <button 
                 onClick={handleLogout} 
                 className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-sm font-medium"

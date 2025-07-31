@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Import your actual API
 import API from "../api";
@@ -14,6 +16,7 @@ export default function AdminPanel({ user, setUser }) {
     username: "",
     email: "",
     password: "",
+    phoneNumber: "",
     isAdmin: false
   });
   const navigate = useNavigate();
@@ -29,7 +32,7 @@ export default function AdminPanel({ user, setUser }) {
       setDashboardData(res.data);
       setUsers(res.data.users);
     } catch (err) {
-      setError("Failed to load dashboard data");
+      toast.error("Failed to load dashboard data");
     } finally {
       setLoading(false);
     }
@@ -39,25 +42,27 @@ export default function AdminPanel({ user, setUser }) {
     try {
       await API.put(`/tasks/${taskId}/assign`, { assignedTo });
       fetchDashboardData();
+      toast.success("Task assigned successfully!");
     } catch (err) {
-      setError("Failed to assign task");
+      toast.error("Failed to assign task");
     }
   };
 
   const handleCreateUser = async () => {
     try {
       if (!newUser.username.trim() || !newUser.email.trim() || !newUser.password.trim()) {
-        setError("All fields are required");
+        toast.error("All fields are required");
         return;
       }
       
       await API.post("/auth/create-user", newUser);
       setShowCreateUserModal(false);
-      setNewUser({ username: "", email: "", password: "", isAdmin: false });
+      setNewUser({ username: "", email: "", password: "", phoneNumber: "", isAdmin: false });
       fetchDashboardData(); // Refresh to get updated user list
-      setError("");
+      toast.success("User created successfully!");
     } catch (err) {
-      setError(err.response?.data?.msg || "Failed to create user");
+      const errorMessage = err.response?.data?.msg || "Failed to create user";
+      toast.error(errorMessage);
     }
   };
 
@@ -67,9 +72,10 @@ export default function AdminPanel({ user, setUser }) {
     try {
       await API.delete(`/auth/users/${userId}`);
       fetchDashboardData(); // Refresh to get updated user list
-      setError("");
+      toast.success("User deleted successfully!");
     } catch (err) {
-      setError(err.response?.data?.msg || "Failed to delete user");
+      const errorMessage = err.response?.data?.msg || "Failed to delete user";
+      toast.error(errorMessage);
     }
   };
 
@@ -105,7 +111,7 @@ export default function AdminPanel({ user, setUser }) {
           <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
           <p className={`text-3xl font-bold ${color}`}>{value}</p>
         </div>
-        <div className={`w-12 h-12 rounded-xl ${color.includes('purple') ? 'bg-purple-100' : color.includes('green') ? 'bg-emerald-100' : color.includes('blue') ? 'bg-blue-100' : 'bg-slate-100'} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+        <div className={`w-12 h-12 rounded-xl ${color.includes('green') ? 'bg-green-100' : color.includes('emerald') ? 'bg-emerald-100' : color.includes('teal') ? 'bg-teal-100' : color.includes('lime') ? 'bg-lime-100' : 'bg-slate-100'} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
           {icon}
         </div>
       </div>
@@ -115,9 +121,9 @@ export default function AdminPanel({ user, setUser }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-xl font-medium text-slate-700">Loading Dashboard...</p>
         </div>
       </div>
@@ -126,7 +132,7 @@ export default function AdminPanel({ user, setUser }) {
 
   if (!dashboardData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,13 +146,13 @@ export default function AdminPanel({ user, setUser }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Enhanced Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-10">
           <div>
-            <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
               Admin Dashboard
             </h1>
             <p className="text-slate-600 text-lg">Monitor and manage your team's progress</p>
@@ -155,7 +161,7 @@ export default function AdminPanel({ user, setUser }) {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => navigate("/tasks")}
-              className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 hover:shadow-xl hover:shadow-indigo-300 hover:-translate-y-0.5 transition-all duration-300"
+              className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-medium shadow-lg shadow-green-200 hover:shadow-xl hover:shadow-green-300 hover:-translate-y-0.5 transition-all duration-300"
             >
               <span className="flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,7 +185,7 @@ export default function AdminPanel({ user, setUser }) {
             
             <button
               onClick={() => navigate("/admin-kanban")}
-              className="px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl font-medium shadow-lg shadow-purple-200 hover:shadow-xl hover:shadow-purple-300 hover:-translate-y-0.5 transition-all duration-300"
+              className="px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl font-medium shadow-lg shadow-teal-200 hover:shadow-xl hover:shadow-teal-300 hover:-translate-y-0.5 transition-all duration-300"
             >
               <span className="flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -191,7 +197,7 @@ export default function AdminPanel({ user, setUser }) {
             
             <button
               onClick={() => setShowCreateUserModal(true)}
-              className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-medium shadow-lg shadow-green-200 hover:shadow-xl hover:shadow-green-300 hover:-translate-y-0.5 transition-all duration-300"
+              className="px-6 py-3 bg-gradient-to-r from-lime-500 to-lime-600 text-white rounded-xl font-medium shadow-lg shadow-lime-200 hover:shadow-xl hover:shadow-lime-300 hover:-translate-y-0.5 transition-all duration-300"
             >
               <span className="flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,6 +205,15 @@ export default function AdminPanel({ user, setUser }) {
                 </svg>
                 Create User
               </span>
+            </button>
+            
+            {/* Profile Icon */}
+            <button
+              onClick={() => navigate("/profile")}
+              className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-xl hover:from-green-500 hover:to-emerald-600 transition-all duration-200 shadow-sm"
+              title="Profile Settings"
+            >
+              {user?.username?.charAt(0).toUpperCase()}
             </button>
             
             <button 
@@ -220,8 +235,8 @@ export default function AdminPanel({ user, setUser }) {
           <StatCard 
             title="Total Tasks" 
             value={dashboardData.stats.totalTasks} 
-            color="text-indigo-600"
-            icon={<svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>}
+            color="text-green-600"
+            icon={<svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>}
           />
           <StatCard 
             title="Completed" 
@@ -232,22 +247,22 @@ export default function AdminPanel({ user, setUser }) {
           <StatCard 
             title="In Progress" 
             value={dashboardData.stats.inProgressTasks} 
-            color="text-blue-600"
-            icon={<svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+            color="text-teal-600"
+            icon={<svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
           />
           <StatCard 
             title="To Do" 
             value={dashboardData.stats.todoTasks} 
-            color="text-slate-600"
-            icon={<svg className="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>}
+            color="text-lime-600"
+            icon={<svg className="w-6 h-6 text-lime-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>}
           />
         </div>
 
         {/* Enhanced Tasks Table */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-10">
-          <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-purple-50">
+          <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-r from-green-50 to-emerald-50">
             <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
-              <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14-7v3m0-3a2 2 0 00-2-2H7a2 2 0 00-2 2m14 0v11a2 2 0 01-2 2H7a2 2 0 01-2-2V4m0 3v8a1 1 0 001 1h1m4-7V9" />
               </svg>
               All Tasks
@@ -290,7 +305,7 @@ export default function AdminPanel({ user, setUser }) {
                       <select
                         value={task.assignedTo?._id || ""}
                         onChange={(e) => handleAssignTask(task._id, e.target.value)}
-                        className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors"
+                        className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-colors"
                       >
                         <option value="">Unassigned</option>
                         {users.map((user) => (
@@ -334,7 +349,7 @@ export default function AdminPanel({ user, setUser }) {
                     <td className="py-6 px-6">
                       <button 
                         onClick={() => navigate(`/tasks`)}
-                        className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 text-sm font-medium hover:bg-indigo-50 px-3 py-2 rounded-lg transition-colors"
+                        className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 text-sm font-medium hover:bg-green-50 px-3 py-2 rounded-lg transition-colors"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -352,9 +367,9 @@ export default function AdminPanel({ user, setUser }) {
 
         {/* User Management Section */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-10">
-          <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
+          <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-r from-teal-50 to-emerald-50">
             <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
-              <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
               </svg>
               User Management
@@ -368,6 +383,7 @@ export default function AdminPanel({ user, setUser }) {
                   <tr>
                     <th className="text-left py-4 px-6 font-semibold text-slate-700 text-sm uppercase tracking-wider">Username</th>
                     <th className="text-left py-4 px-6 font-semibold text-slate-700 text-sm uppercase tracking-wider">Email</th>
+                    <th className="text-left py-4 px-6 font-semibold text-slate-700 text-sm uppercase tracking-wider">Phone Number</th>
                     <th className="text-left py-4 px-6 font-semibold text-slate-700 text-sm uppercase tracking-wider">Role</th>
                     <th className="text-left py-4 px-6 font-semibold text-slate-700 text-sm uppercase tracking-wider">Actions</th>
                   </tr>
@@ -377,7 +393,7 @@ export default function AdminPanel({ user, setUser }) {
                     <tr key={user._id} className="hover:bg-slate-50 transition-colors duration-200">
                       <td className="py-6 px-6">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                          <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold">
                             {user.username.charAt(0).toUpperCase()}
                           </div>
                           <span className="font-semibold text-slate-900">{user.username}</span>
@@ -387,9 +403,12 @@ export default function AdminPanel({ user, setUser }) {
                         <span className="text-slate-700">{user.email}</span>
                       </td>
                       <td className="py-6 px-6">
+                        <span className="text-slate-700">{user.phoneNumber || "Not provided"}</span>
+                      </td>
+                      <td className="py-6 px-6">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
                           user.isAdmin 
-                            ? 'bg-purple-50 text-purple-700 border border-purple-200' 
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
                             : 'bg-slate-50 text-slate-700 border border-slate-200'
                         }`}>
                           {user.isAdmin ? 'Admin' : 'User'}
@@ -416,7 +435,7 @@ export default function AdminPanel({ user, setUser }) {
 
         {/* Enhanced User Progress Summary */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-blue-50">
+          <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-green-50">
             <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
               <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -436,7 +455,7 @@ export default function AdminPanel({ user, setUser }) {
                 return (
                   <div key={user._id} className="group relative bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                     <div className="flex items-center gap-4 mb-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                      <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
                         {user.username.charAt(0).toUpperCase()}
                       </div>
                       <div>
@@ -474,7 +493,7 @@ export default function AdminPanel({ user, setUser }) {
                       </div>
                     </div>
                     
-                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-indigo-400 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-b-xl"></div>
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-green-400 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-b-xl"></div>
                   </div>
                 );
               })}
@@ -516,7 +535,7 @@ export default function AdminPanel({ user, setUser }) {
                   type="text"
                   value={newUser.username}
                   onChange={(e) => setNewUser({...newUser, username: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="Enter username"
                 />
               </div>
@@ -527,8 +546,19 @@ export default function AdminPanel({ user, setUser }) {
                   type="email"
                   value={newUser.email}
                   onChange={(e) => setNewUser({...newUser, email: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="Enter email"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
+                <input
+                  type="tel"
+                  value={newUser.phoneNumber}
+                  onChange={(e) => setNewUser({...newUser, phoneNumber: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Enter phone number"
                 />
               </div>
               
@@ -538,7 +568,7 @@ export default function AdminPanel({ user, setUser }) {
                   type="password"
                   value={newUser.password}
                   onChange={(e) => setNewUser({...newUser, password: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="Enter password"
                 />
               </div>
@@ -549,7 +579,7 @@ export default function AdminPanel({ user, setUser }) {
                   id="isAdmin"
                   checked={newUser.isAdmin}
                   onChange={(e) => setNewUser({...newUser, isAdmin: e.target.checked})}
-                  className="mr-2 accent-blue-600"
+                  className="mr-2 accent-green-600"
                 />
                 <label htmlFor="isAdmin" className="text-sm text-slate-700">
                   Make this user an admin
@@ -566,7 +596,7 @@ export default function AdminPanel({ user, setUser }) {
               </button>
               <button
                 onClick={handleCreateUser}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
               >
                 Create User
               </button>
@@ -574,6 +604,20 @@ export default function AdminPanel({ user, setUser }) {
           </div>
         </div>
       )}
+      
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }

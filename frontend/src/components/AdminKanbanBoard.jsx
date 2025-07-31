@@ -37,7 +37,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
   });
   const [newSection, setNewSection] = useState({
     name: "",
-    color: "blue",
+    color: "green",
     icon: "Target"
   });
   const navigate = useNavigate();
@@ -126,7 +126,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
       [section.id]: []
     }));
     
-    setNewSection({ name: "", color: "blue", icon: "Target" });
+    setNewSection({ name: "", color: "emerald", icon: "Target" });
     setShowSectionModal(false);
   };
 
@@ -255,6 +255,12 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
     }
   };
 
+  // Check if user can delete a task
+  const canDeleteTask = (task) => {
+    // Only admins can delete tasks
+    return user.isAdmin;
+  };
+
   const deleteTask = async (taskId) => {
     try {
       await API.delete(`/tasks/${taskId}`);
@@ -288,34 +294,34 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
       today: {
         title: "Today",
         icon: <CalendarDays className="w-5 h-5" />,
-        color: "text-blue-700",
-        bgColor: "bg-blue-50",
-        borderColor: "border-blue-200",
-        accentColor: "bg-blue-500"
+        color: "text-emerald-700",
+        bgColor: "bg-emerald-50",
+        borderColor: "border-emerald-200",
+        accentColor: "bg-emerald-500"
       },
       "this-week": {
         title: "This Week",
         icon: <CalendarRange className="w-5 h-5" />,
-        color: "text-purple-700",
-        bgColor: "bg-purple-50",
-        borderColor: "border-purple-200",
-        accentColor: "bg-purple-500"
+        color: "text-green-700",
+        bgColor: "bg-green-50",
+        borderColor: "border-green-200",
+        accentColor: "bg-green-500"
       },
       "this-month": {
         title: "This Month",
         icon: <Calendar className="w-5 h-5" />,
-        color: "text-indigo-700",
-        bgColor: "bg-indigo-50",
-        borderColor: "border-indigo-200",
-        accentColor: "bg-indigo-500"
+        color: "text-teal-700",
+        bgColor: "bg-teal-50",
+        borderColor: "border-teal-200",
+        accentColor: "bg-teal-500"
       },
       later: {
         title: "Later",
         icon: <Clock3 className="w-5 h-5" />,
-        color: "text-slate-700",
-        bgColor: "bg-slate-50",
-        borderColor: "border-slate-200",
-        accentColor: "bg-slate-500"
+        color: "text-emerald-700",
+        bgColor: "bg-emerald-50",
+        borderColor: "border-emerald-200",
+        accentColor: "bg-emerald-500"
       },
       done: {
         title: "Done",
@@ -339,6 +345,30 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
     const customSection = customSections.find(s => s.id === columnId);
     if (customSection) {
       const colorMap = {
+        emerald: {
+          color: "text-emerald-700",
+          bgColor: "bg-emerald-50",
+          borderColor: "border-emerald-200",
+          accentColor: "bg-emerald-500"
+        },
+        green: {
+          color: "text-green-700",
+          bgColor: "bg-green-50",
+          borderColor: "border-green-200",
+          accentColor: "bg-green-500"
+        },
+        teal: {
+          color: "text-teal-700",
+          bgColor: "bg-teal-50",
+          borderColor: "border-teal-200",
+          accentColor: "bg-teal-500"
+        },
+        lime: {
+          color: "text-lime-700",
+          bgColor: "bg-lime-50",
+          borderColor: "border-lime-200",
+          accentColor: "bg-lime-500"
+        },
         blue: {
           color: "text-blue-700",
           bgColor: "bg-blue-50",
@@ -350,30 +380,6 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
           bgColor: "bg-purple-50",
           borderColor: "border-purple-200",
           accentColor: "bg-purple-500"
-        },
-        green: {
-          color: "text-emerald-700",
-          bgColor: "bg-emerald-50",
-          borderColor: "border-emerald-200",
-          accentColor: "bg-emerald-500"
-        },
-        orange: {
-          color: "text-orange-700",
-          bgColor: "bg-orange-50",
-          borderColor: "border-orange-200",
-          accentColor: "bg-orange-500"
-        },
-        pink: {
-          color: "text-pink-700",
-          bgColor: "bg-pink-50",
-          borderColor: "border-pink-200",
-          accentColor: "bg-pink-500"
-        },
-        gray: {
-          color: "text-gray-700",
-          bgColor: "bg-gray-50",
-          borderColor: "border-gray-200",
-          accentColor: "bg-gray-500"
         }
       };
 
@@ -406,19 +412,19 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-teal-100 flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
-          <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-          <div className="text-lg text-slate-600 font-medium">Loading your tasks...</div>
+          <div className="w-12 h-12 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
+          <div className="text-lg text-emerald-600 font-medium">Loading your tasks...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-teal-100">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-10">
+      <div className="bg-white/80 backdrop-blur-sm border-b border-emerald-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
@@ -436,10 +442,10 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
               </div>
             </div>
 
-            <h1 className="text-2xl font-bold text-slate-800">
+            <h1 className="text-2xl font-bold text-emerald-800">
                   {user.isAdmin ? 'Admin Task Board' : 'Task Board'}
                 </h1>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-emerald-600">
                   {user.isAdmin ? 'Manage your team\'s workflow' : 'View and manage your tasks'}
                 </p>
             
@@ -447,7 +453,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
               <button 
                 onClick={fetchTasks}
                 disabled={loading}
-                className="px-3 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors flex items-center space-x-2 disabled:opacity-50"
+                className="px-3 py-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-colors flex items-center space-x-2 disabled:opacity-50"
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                 <span>Refresh</span>
@@ -455,7 +461,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
               
               <button 
                 onClick={() => setShowAddModal(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 shadow-sm"
+                className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center space-x-2 shadow-sm"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add Task</span>
@@ -463,7 +469,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
               
               <button 
                 onClick={() => setShowSectionModal(true)}
-                className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center space-x-2 shadow-sm"
+                className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors flex items-center space-x-2 shadow-sm"
               >
                 <FolderPlus className="w-4 h-4" />
                 <span>Add Section</span>
@@ -472,15 +478,24 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
               {user.isAdmin && (
                 <button 
                   onClick={() => navigate('/admin')}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                 >
                   Admin Panel
                 </button>
               )}
               
-              <div className="flex items-center space-x-2 px-3 py-2 bg-slate-100 rounded-lg">
-                <User className="w-4 h-4 text-slate-600" />
-                <span className="text-sm text-slate-700">{user?.username}</span>
+              {/* Profile Icon */}
+              <button
+                onClick={() => navigate("/profile")}
+                className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full flex items-center justify-center text-white font-bold text-lg hover:from-emerald-500 hover:to-green-600 transition-all duration-200 shadow-sm"
+                title="Profile Settings"
+              >
+                {user?.username?.charAt(0).toUpperCase()}
+              </button>
+              
+              <div className="flex items-center space-x-2 px-3 py-2 bg-emerald-100 rounded-lg">
+                <User className="w-4 h-4 text-emerald-600" />
+                <span className="text-sm text-emerald-700">{user?.username}</span>
               </div>
             </div>
           </div>
@@ -490,7 +505,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
       {/* Main Content */}
       <div className="p-6">
         <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="flex gap-6 overflow-x-auto pb-4 min-h-[calc(100vh-200px)] scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100">
+          <div className="flex gap-6 overflow-x-auto pb-4 min-h-[calc(100vh-200px)] scrollbar-thin scrollbar-thumb-emerald-300 scrollbar-track-emerald-100">
             {Object.entries(tasks).map(([columnId, columnTasks]) => {
               const config = getColumnConfig(columnId);
               const progress = calculateProgress(columnTasks);
@@ -498,7 +513,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
               return (
                 <div key={columnId} className="flex flex-col min-w-[320px] max-w-[320px]">
                   {/* Column Header */}
-                  <div className="bg-white rounded-t-xl shadow-sm border border-slate-200 p-4">
+                  <div className="bg-white rounded-t-xl shadow-sm border border-emerald-200 p-4">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-3">
                         <div className={`w-8 h-8 rounded-lg ${config.bgColor} flex items-center justify-center ${config.color}`}>
@@ -508,7 +523,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                           <h2 className={`text-lg font-semibold ${config.color}`}>
                             {config.title}
                           </h2>
-                          <span className="text-sm text-slate-500">{columnTasks.length} tasks</span>
+                          <span className="text-sm text-emerald-500">{columnTasks.length} tasks</span>
                         </div>
                       </div>
                       <div className="flex items-center space-x-1">
@@ -517,9 +532,9 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                             setSelectedCategory(columnId);
                             setShowAddModal(true);
                           }}
-                          className="p-1 hover:bg-slate-100 rounded"
+                          className="p-1 hover:bg-emerald-100 rounded"
                         >
-                          <Plus className="w-4 h-4 text-slate-400" />
+                          <Plus className="w-4 h-4 text-emerald-400" />
                         </button>
                         {customSections.find(s => s.id === columnId) && (
                           <button 
@@ -535,10 +550,10 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                     {/* Progress Bar */}
                     <div className="mb-2">
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs text-slate-600">Progress</span>
-                        <span className="text-xs font-medium text-slate-700">{progress}%</span>
+                        <span className="text-xs text-emerald-600">Progress</span>
+                        <span className="text-xs font-medium text-emerald-700">{progress}%</span>
                       </div>
-                      <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div className="w-full bg-emerald-200 rounded-full h-2">
                         <div 
                           className={`h-2 rounded-full transition-all duration-500 ${config.accentColor}`}
                           style={{ width: `${progress}%` }}
@@ -555,7 +570,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                           {...provided.droppableProps}
                           ref={provided.innerRef}
                           className={`p-4 min-h-[500px] transition-colors ${
-                            snapshot.isDraggingOver ? 'bg-blue-50/50' : ''
+                            snapshot.isDraggingOver ? 'bg-emerald-50/50' : ''
                           }`}
                         >
                           {columnTasks.map((task, index) => (
@@ -565,7 +580,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
-                                  className={`bg-white rounded-xl p-4 mb-4 border border-slate-200 hover:shadow-md transition-all duration-200 cursor-pointer ${
+                                  className={`bg-white rounded-xl p-4 mb-4 border border-emerald-200 hover:shadow-md transition-all duration-200 cursor-pointer ${
                                     snapshot.isDragging ? 'shadow-lg rotate-2 scale-105' : ''
                                   }`}
                                   onClick={() => {
@@ -575,7 +590,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                                 >
                                   {/* Task Header */}
                                   <div className="flex justify-between items-start mb-3">
-                                    <h3 className="font-semibold text-slate-800 text-sm leading-tight flex-1">
+                                    <h3 className="font-semibold text-emerald-800 text-sm leading-tight flex-1">
                                       {task.title}
                                     </h3>
                                     <div className="flex items-center space-x-1">
@@ -584,11 +599,11 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                                         <span className="capitalize">{task.priority}</span>
                                       </div>
                                       {!canEditTask(task) && (
-                                        <div className="px-2 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                                        <div className="px-2 py-1 rounded-md text-xs font-medium bg-emerald-100 text-emerald-600 border border-emerald-200">
                                           Read Only
                                         </div>
                                       )}
-                                      {canEditTask(task) && (
+                                      {canDeleteTask(task) && (
                                         <button 
                                           onClick={(e) => {
                                             e.stopPropagation();
@@ -605,12 +620,12 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                                   {/* Task Details */}
                                   <div className="space-y-3">
                                     {/* Assignment */}
-                                    <div className="flex items-center justify-between text-xs text-slate-600">
+                                    <div className="flex items-center justify-between text-xs text-emerald-600">
                                       <div className="flex items-center space-x-1">
                                         <Users className="w-3 h-3" />
                                         <span>{task.assignedTo?.username || 'Unassigned'}</span>
                                       </div>
-                                      <div className="flex items-center space-x-1 text-slate-500">
+                                      <div className="flex items-center space-x-1 text-emerald-500">
                                         <User className="w-3 h-3" />
                                         <span>{task.createdBy?.username}</span>
                                       </div>
@@ -619,10 +634,10 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                                     {/* Progress Bar */}
                                     <div>
                                       <div className="flex justify-between items-center mb-1">
-                                        <span className="text-xs text-slate-600">Progress</span>
-                                        <span className="text-xs font-medium text-slate-700">{task.progress}%</span>
+                                        <span className="text-xs text-emerald-600">Progress</span>
+                                        <span className="text-xs font-medium text-emerald-700">{task.progress}%</span>
                                       </div>
-                                      <div className="w-full bg-slate-200 rounded-full h-2">
+                                      <div className="w-full bg-emerald-200 rounded-full h-2">
                                         <div 
                                           className={`h-2 rounded-full transition-all duration-500 ${config.accentColor}`}
                                           style={{ width: `${task.progress}%` }}
@@ -632,13 +647,13 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
 
                                     {/* Points and Files */}
                                     <div className="flex items-center justify-between">
-                                      <div className="flex items-center space-x-1 text-xs text-slate-500">
+                                      <div className="flex items-center space-x-1 text-xs text-emerald-500">
                                         <CheckCircle className="w-3 h-3" />
                                         <span>{task.points?.length || 0} points</span>
                                       </div>
                                       
                                       {task.files && task.files.length > 0 && (
-                                        <div className="flex items-center space-x-1 text-xs text-slate-500">
+                                        <div className="flex items-center space-x-1 text-xs text-emerald-500">
                                           <FileText className="w-3 h-3" />
                                           <span>{task.files.length} files</span>
                                         </div>
@@ -653,8 +668,8 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                           
                           {/* Empty State */}
                           {columnTasks.length === 0 && (
-                            <div className="flex flex-col items-center justify-center py-12 text-slate-400">
-                              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                            <div className="flex flex-col items-center justify-center py-12 text-emerald-400">
+                              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
                                 {config.icon}
                               </div>
                               <p className="text-sm">No tasks in {config.title.toLowerCase()}</p>
@@ -686,10 +701,10 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-slate-800">Add New Task</h2>
+              <h2 className="text-xl font-semibold text-emerald-800">Add New Task</h2>
               <button 
                 onClick={() => setShowAddModal(false)}
-                className="p-1 hover:bg-slate-100 rounded"
+                className="p-1 hover:bg-emerald-100 rounded"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -697,22 +712,22 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Title</label>
+                <label className="block text-sm font-medium text-emerald-700 mb-1">Title</label>
                 <input
                   type="text"
                   value={newTask.title}
                   onChange={(e) => setNewTask({...newTask, title: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   placeholder="Enter task title"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-emerald-700 mb-1">Description</label>
                 <textarea
                   value={newTask.description}
                   onChange={(e) => setNewTask({...newTask, description: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   rows="3"
                   placeholder="Enter task description"
                 />
@@ -720,11 +735,11 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Priority</label>
+                  <label className="block text-sm font-medium text-emerald-700 mb-1">Priority</label>
                   <select
                     value={newTask.priority}
                     onChange={(e) => setNewTask({...newTask, priority: e.target.value})}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -734,11 +749,11 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                 
                 {canAssignToOthers() && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Assign To</label>
+                    <label className="block text-sm font-medium text-emerald-700 mb-1">Assign To</label>
                     <select
                       value={newTask.assignedTo}
                       onChange={(e) => setNewTask({...newTask, assignedTo: e.target.value})}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     >
                       <option value="">Select user</option>
                       {users.map(user => (
@@ -750,17 +765,17 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Due Date</label>
+                <label className="block text-sm font-medium text-emerald-700 mb-1">Due Date</label>
                 <input
                   type="date"
                   value={newTask.dueDate}
                   onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Points/Subtasks</label>
+                <label className="block text-sm font-medium text-emerald-700 mb-1">Points/Subtasks</label>
                 {newTask.points.map((point, index) => (
                   <div key={index} className="flex space-x-2 mb-2">
                     <input
@@ -771,7 +786,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                         newPoints[index] = e.target.value;
                         setNewTask({...newTask, points: newPoints});
                       }}
-                      className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       placeholder="Enter point/subtask"
                     />
                     <button
@@ -787,7 +802,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                 ))}
                 <button
                   onClick={() => setNewTask({...newTask, points: [...newTask.points, ""]})}
-                  className="text-blue-600 hover:text-blue-700 text-sm flex items-center space-x-1"
+                  className="text-emerald-600 hover:text-emerald-700 text-sm flex items-center space-x-1"
                 >
                   <Plus className="w-3 h-3" />
                   <span>Add Point</span>
@@ -798,13 +813,13 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
             <div className="flex space-x-3 mt-6">
               <button
                 onClick={() => setShowAddModal(false)}
-                className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50"
+                className="flex-1 px-4 py-2 border border-emerald-300 text-emerald-700 rounded-lg hover:bg-emerald-50"
               >
                 Cancel
               </button>
               <button
                 onClick={createTask}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
               >
                 Create Task
               </button>
@@ -818,10 +833,10 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-slate-800">Task Details</h2>
+              <h2 className="text-xl font-semibold text-emerald-800">Task Details</h2>
               <button 
                 onClick={() => setShowTaskModal(false)}
-                className="p-1 hover:bg-slate-100 rounded"
+                className="p-1 hover:bg-emerald-100 rounded"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -829,22 +844,22 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Title</label>
+                <label className="block text-sm font-medium text-emerald-700 mb-1">Title</label>
                 <input
                   type="text"
                   value={selectedTask.title}
                   onChange={(e) => setSelectedTask({...selectedTask, title: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   disabled={!canEditTask(selectedTask)}
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-emerald-700 mb-1">Description</label>
                 <textarea
                   value={selectedTask.description || ""}
                   onChange={(e) => setSelectedTask({...selectedTask, description: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   rows="3"
                   disabled={!canEditTask(selectedTask)}
                 />
@@ -852,11 +867,11 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
               
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Priority</label>
+                  <label className="block text-sm font-medium text-emerald-700 mb-1">Priority</label>
                   <select
                     value={selectedTask.priority}
                     onChange={(e) => setSelectedTask({...selectedTask, priority: e.target.value})}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     disabled={!canEditTask(selectedTask)}
                   >
                     <option value="low">Low</option>
@@ -866,11 +881,11 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Assign To</label>
+                  <label className="block text-sm font-medium text-emerald-700 mb-1">Assign To</label>
                   <select
                     value={selectedTask.assignedTo?._id || ""}
                     onChange={(e) => setSelectedTask({...selectedTask, assignedTo: e.target.value})}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     disabled={!canEditTask(selectedTask)}
                   >
                     <option value="">Select user</option>
@@ -881,19 +896,19 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Due Date</label>
+                  <label className="block text-sm font-medium text-emerald-700 mb-1">Due Date</label>
                   <input
                     type="date"
                     value={selectedTask.dueDate ? new Date(selectedTask.dueDate).toISOString().split('T')[0] : ""}
                     onChange={(e) => setSelectedTask({...selectedTask, dueDate: e.target.value})}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     disabled={!canEditTask(selectedTask)}
                   />
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Points/Subtasks</label>
+                <label className="block text-sm font-medium text-emerald-700 mb-1">Points/Subtasks</label>
                 {selectedTask.points.map((point, index) => (
                   <div key={index} className="flex space-x-2 mb-2">
                     <input
@@ -904,7 +919,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                         newPoints[index] = { ...newPoints[index], text: e.target.value };
                         setSelectedTask({...selectedTask, points: newPoints});
                       }}
-                      className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     />
                     <button
                       onClick={() => {
@@ -919,7 +934,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                 ))}
                 <button
                   onClick={() => setSelectedTask({...selectedTask, points: [...selectedTask.points, { text: "", completedBy: [] }]})}
-                  className="text-blue-600 hover:text-blue-700 text-sm flex items-center space-x-1"
+                  className="text-emerald-600 hover:text-emerald-700 text-sm flex items-center space-x-1"
                 >
                   <Plus className="w-3 h-3" />
                   <span>Add Point</span>
@@ -928,12 +943,12 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
               
               {selectedTask.files && selectedTask.files.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Files</label>
+                  <label className="block text-sm font-medium text-emerald-700 mb-1">Files</label>
                   <div className="space-y-2">
                     {selectedTask.files.map((file, index) => (
-                      <div key={index} className="flex items-center space-x-2 p-2 bg-slate-50 rounded">
-                        <FileText className="w-4 h-4 text-slate-500" />
-                        <span className="text-sm text-slate-700">{file.originalName}</span>
+                      <div key={index} className="flex items-center space-x-2 p-2 bg-emerald-50 rounded">
+                        <FileText className="w-4 h-4 text-emerald-500" />
+                        <span className="text-sm text-emerald-700">{file.originalName}</span>
                       </div>
                     ))}
                   </div>
@@ -944,14 +959,14 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
             <div className="flex space-x-3 mt-6">
               <button
                 onClick={() => setShowTaskModal(false)}
-                className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50"
+                className="flex-1 px-4 py-2 border border-emerald-300 text-emerald-700 rounded-lg hover:bg-emerald-50"
               >
                 Close
               </button>
               {canEditTask(selectedTask) && (
                 <button
                   onClick={updateTask}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
                 >
                   Save Changes
                 </button>
@@ -966,10 +981,10 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-slate-800">Add New Section</h2>
+              <h2 className="text-xl font-semibold text-emerald-800">Add New Section</h2>
               <button 
                 onClick={() => setShowSectionModal(false)}
-                className="p-1 hover:bg-slate-100 rounded"
+                className="p-1 hover:bg-emerald-100 rounded"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -977,39 +992,39 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Section Name</label>
+                <label className="block text-sm font-medium text-emerald-700 mb-1">Section Name</label>
                 <input
                   type="text"
                   value={newSection.name}
                   onChange={(e) => setNewSection({...newSection, name: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   placeholder="Enter section name"
                 />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Color</label>
+                  <label className="block text-sm font-medium text-emerald-700 mb-1">Color</label>
                   <select
                     value={newSection.color}
                     onChange={(e) => setNewSection({...newSection, color: e.target.value})}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
+                    <option value="emerald">Emerald</option>
+                    <option value="green">Green</option>
+                    <option value="teal">Teal</option>
+                    <option value="lime">Lime</option>
                     <option value="blue">Blue</option>
                     <option value="purple">Purple</option>
-                    <option value="green">Green</option>
-                    <option value="orange">Orange</option>
-                    <option value="pink">Pink</option>
-                    <option value="gray">Gray</option>
                   </select>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Icon</label>
+                  <label className="block text-sm font-medium text-emerald-700 mb-1">Icon</label>
                   <select
                     value={newSection.icon}
                     onChange={(e) => setNewSection({...newSection, icon: e.target.value})}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="Target">Target</option>
                     <option value="Calendar">Calendar</option>
@@ -1027,13 +1042,13 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
             <div className="flex space-x-3 mt-6">
               <button
                 onClick={() => setShowSectionModal(false)}
-                className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50"
+                className="flex-1 px-4 py-2 border border-emerald-300 text-emerald-700 rounded-lg hover:bg-emerald-50"
               >
                 Cancel
               </button>
               <button
                 onClick={createCustomSection}
-                className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
+                className="flex-1 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
               >
                 Create Section
               </button>
