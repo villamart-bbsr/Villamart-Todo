@@ -145,7 +145,7 @@ exports.getAdminDashboard = async (req, res) => {
       .populate('points.completedBy', 'username')
       .populate('files.uploadedBy', 'username');
     
-    const users = await User.find({}, 'username email');
+    const users = await User.find({}, 'username email phoneNumber ');
     
     const stats = {
       totalTasks: tasks.length,

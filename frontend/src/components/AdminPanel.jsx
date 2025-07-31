@@ -144,6 +144,7 @@ export default function AdminPanel({ user, setUser }) {
       </div>
     );
   }
+  console.log(users);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50">
