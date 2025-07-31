@@ -24,7 +24,6 @@ function App() {
       localStorage.removeItem("user");
     }
   }, [user]);
-
   return (
     <Router>
       <Routes>
