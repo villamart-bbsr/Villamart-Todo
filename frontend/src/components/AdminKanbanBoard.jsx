@@ -31,7 +31,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
     title: "",
     description: "",
     priority: "medium",
-    assignedTo: "",
+    assignedTo: [],
     dueDate: "",
     points: [""]
   });
@@ -77,7 +77,11 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
         // If not admin, only keep tasks created by or assigned to current user
         if (!user.isAdmin) {
           categoryTasks = categoryTasks.filter(t =>
-            (t.createdBy?._id === user._id) || (t.assignedTo?._id === user._id)
+            (t.createdBy?._id === user._id) || 
+            (Array.isArray(t.assignedTo) 
+              ? t.assignedTo.some(assignee => assignee._id === user._id)
+              : t.assignedTo?._id === user._id
+            )
           );
         }
         newTasks[category] = categoryTasks;
@@ -149,7 +153,11 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
   if (!user.isAdmin) {
     const sourceTasks = tasks[result.source.droppableId];
     const draggedTask = sourceTasks[result.source.index];
-    const isOwner = (draggedTask.createdBy?._id === user._id) || (draggedTask.assignedTo?._id === user._id);
+    const isOwner = (draggedTask.createdBy?._id === user._id) || 
+      (Array.isArray(draggedTask.assignedTo) 
+        ? draggedTask.assignedTo.some(assignee => assignee._id === user._id)
+        : draggedTask.assignedTo?._id === user._id
+      );
     if (!isOwner) return; // not allowed
   }
 
@@ -214,7 +222,7 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
         title: "",
         description: "",
         priority: "medium",
-        assignedTo: "",
+        assignedTo: [],
         dueDate: "",
         points: [""]
       });
@@ -623,7 +631,14 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                                     <div className="flex items-center justify-between text-xs text-emerald-600">
                                       <div className="flex items-center space-x-1">
                                         <Users className="w-3 h-3" />
-                                        <span>{task.assignedTo?.username || 'Unassigned'}</span>
+                                        <span>
+                                          {task.assignedTo && Array.isArray(task.assignedTo) && task.assignedTo.length > 0
+                                            ? task.assignedTo.length === 1
+                                              ? task.assignedTo[0]?.username || 'Unknown User'
+                                              : `${task.assignedTo.length} users assigned`
+                                            : task.assignedTo?.username || 'Unassigned'
+                                          }
+                                        </span>
                                       </div>
                                       <div className="flex items-center space-x-1 text-emerald-500">
                                         <User className="w-3 h-3" />
@@ -749,17 +764,36 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                 
                 {canAssignToOthers() && (
                   <div>
-                    <label className="block text-sm font-medium text-emerald-700 mb-1">Assign To</label>
-                    <select
-                      value={newTask.assignedTo}
-                      onChange={(e) => setNewTask({...newTask, assignedTo: e.target.value})}
-                      className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    >
-                      <option value="">Select user</option>
+                    <label className="block text-sm font-medium text-emerald-700 mb-1">Assign To (Multiple Users)</label>
+                    <div className="border border-emerald-300 rounded-lg p-2 max-h-32 overflow-y-auto">
                       {users.map(user => (
-                        <option key={user._id} value={user._id}>{user.username}</option>
+                        <label key={user._id} className="flex items-center space-x-2 py-1 hover:bg-emerald-50 rounded cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={newTask.assignedTo.includes(user._id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setNewTask({...newTask, assignedTo: [...newTask.assignedTo, user._id]});
+                              } else {
+                                setNewTask({...newTask, assignedTo: newTask.assignedTo.filter(id => id !== user._id)});
+                              }
+                            }}
+                            className="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+                          />
+                          <span className="text-sm text-gray-700">{user.username}</span>
+                        </label>
                       ))}
-                    </select>
+                      {users.length === 0 && (
+                        <p className="text-sm text-gray-500 py-2">No users available</p>
+                      )}
+                    </div>
+                    {newTask.assignedTo.length > 0 && (
+                      <div className="mt-2">
+                        <p className="text-xs text-emerald-600">
+                          {newTask.assignedTo.length} user{newTask.assignedTo.length !== 1 ? 's' : ''} selected
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -880,19 +914,52 @@ export default function AdminKanbanBoard({ user = { username: "admin", isAdmin: 
                   </select>
                 </div>
                 
-                <div>
-                  <label className="block text-sm font-medium text-emerald-700 mb-1">Assign To</label>
-                  <select
-                    value={selectedTask.assignedTo?._id || ""}
-                    onChange={(e) => setSelectedTask({...selectedTask, assignedTo: e.target.value})}
-                    className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    disabled={!canEditTask(selectedTask)}
-                  >
-                    <option value="">Select user</option>
-                    {users.map(user => (
-                      <option key={user._id} value={user._id}>{user.username}</option>
-                    ))}
-                  </select>
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-emerald-700 mb-1">Assign To (Multiple Users)</label>
+                  <div className="border border-emerald-300 rounded-lg p-2 max-h-32 overflow-y-auto">
+                    {users.map(user => {
+                      const isAssigned = selectedTask.assignedTo && Array.isArray(selectedTask.assignedTo) 
+                        ? selectedTask.assignedTo.some(assignee => assignee._id === user._id)
+                        : selectedTask.assignedTo?._id === user._id;
+                      return (
+                        <label key={user._id} className="flex items-center space-x-2 py-1 hover:bg-emerald-50 rounded cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={isAssigned}
+                            onChange={(e) => {
+                              if (!canEditTask(selectedTask)) return;
+                              let newAssignedTo;
+                              if (Array.isArray(selectedTask.assignedTo)) {
+                                if (e.target.checked) {
+                                  newAssignedTo = [...selectedTask.assignedTo, user._id];
+                                } else {
+                                  newAssignedTo = selectedTask.assignedTo.filter(assignee => 
+                                    (typeof assignee === 'string' ? assignee : assignee._id) !== user._id
+                                  );
+                                }
+                              } else {
+                                newAssignedTo = e.target.checked ? [user._id] : [];
+                              }
+                              setSelectedTask({...selectedTask, assignedTo: newAssignedTo});
+                            }}
+                            className="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+                            disabled={!canEditTask(selectedTask)}
+                          />
+                          <span className="text-sm text-gray-700">{user.username}</span>
+                        </label>
+                      );
+                    })}
+                    {users.length === 0 && (
+                      <p className="text-sm text-gray-500 py-2">No users available</p>
+                    )}
+                  </div>
+                  {selectedTask.assignedTo && selectedTask.assignedTo.length > 0 && (
+                    <div className="mt-2">
+                      <p className="text-xs text-emerald-600">
+                        {Array.isArray(selectedTask.assignedTo) ? selectedTask.assignedTo.length : 1} user{(Array.isArray(selectedTask.assignedTo) ? selectedTask.assignedTo.length : 1) !== 1 ? 's' : ''} selected
+                      </p>
+                    </div>
+                  )}
                 </div>
                 
                 <div>

@@ -9,7 +9,7 @@ exports.createTask = async (req, res) => {
       title,
       description,
       createdBy: req.user._id,
-      assignedTo: assignedTo || req.user._id,
+      assignedTo: assignedTo && Array.isArray(assignedTo) && assignedTo.length > 0 ? assignedTo : [req.user._id],
       status: status || 'today',
       priority: priority || 'medium',
       dueDate: dueDate ? new Date(dueDate) : null,
@@ -68,7 +68,9 @@ exports.updateTaskStatus = async (req, res) => {
     if (!task) return res.status(404).json({ msg: 'Task not found' });
     
     task.status = status;
-    if (assignedTo) task.assignedTo = assignedTo;
+    if (assignedTo) {
+      task.assignedTo = Array.isArray(assignedTo) ? assignedTo : [assignedTo];
+    }
     await task.save();
     
     const updated = await Task.findById(taskId)
@@ -93,7 +95,9 @@ exports.updateTask = async (req, res) => {
     
     if (title) task.title = title;
     if (description !== undefined) task.description = description;
-    if (assignedTo) task.assignedTo = assignedTo;
+    if (assignedTo) {
+      task.assignedTo = Array.isArray(assignedTo) ? assignedTo : [assignedTo];
+    }
     if (priority) task.priority = priority;
     if (dueDate) task.dueDate = new Date(dueDate);
     if (points) {
@@ -113,7 +117,7 @@ exports.updateTask = async (req, res) => {
   }
 };
 
-// Assign task to user (admin only)
+// Assign task to users (admin only)
 exports.assignTask = async (req, res) => {
   try {
     const { taskId } = req.params;
@@ -122,7 +126,8 @@ exports.assignTask = async (req, res) => {
     const task = await Task.findById(taskId);
     if (!task) return res.status(404).json({ msg: 'Task not found' });
     
-    task.assignedTo = assignedTo;
+    // Handle both single user and multiple users assignment
+    task.assignedTo = Array.isArray(assignedTo) ? assignedTo : [assignedTo];
     await task.save();
     
     const updated = await Task.findById(taskId)
